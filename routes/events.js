@@ -32,35 +32,40 @@ router.get("/:id", async (req, res) => {
 });
 
 // CREATE event (admin)
+// backend/routes/events.js
 router.post("/", adminAuth, upload.single("image"), async (req, res) => {
   try {
-    if (!req.file)
-      return res
-        .status(400)
-        .json({ message: "Image file required (field name: image)" });
+    let imageUrl = "";
+    let imagePublicId = "";
 
-    const streamUpload = (buffer) => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "news_portal_events" },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        streamifier.createReadStream(buffer).pipe(stream);
-      });
-    };
+    // Only upload if an image is provided
+    if (req.file) {
+      const streamUpload = (buffer) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "news_portal_events" },
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+          streamifier.createReadStream(buffer).pipe(stream);
+        });
+      };
 
-    const result = await streamUpload(req.file.buffer);
+      const result = await streamUpload(req.file.buffer);
+      imageUrl = result.secure_url;
+      imagePublicId = result.public_id;
+    }
 
     const { title, description, eventDate } = req.body;
+
     const newEvent = new Event({
       title,
       description,
-      imageUrl: result.secure_url,
-      imagePublicId: result.public_id,
       eventDate: new Date(eventDate),
+      imageUrl,
+      imagePublicId,
     });
 
     const saved = await newEvent.save();
