@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Simple static news list. You can change this or move to DB later.
 const news = [
-  { id: 1, title: 'University Annual Fest announced — registrations open', link: '#' },
+  { id: 1, title: 'Mid Term Exam', link: '#' },
   { id: 2, title: 'Placement drive: 50 companies to visit campus next month', link: '#' }
 ];
 

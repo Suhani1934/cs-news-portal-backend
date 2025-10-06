@@ -32,7 +32,6 @@ router.get("/:id", async (req, res) => {
 });
 
 // CREATE event (admin)
-// backend/routes/events.js
 router.post("/", adminAuth, upload.single("image"), async (req, res) => {
   try {
     let imageUrl = "";
